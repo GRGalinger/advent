@@ -1,8 +1,4 @@
-
-
-
 with open('day0.txt') as f: s = f.read()
-
 
 floor = 0
 iteration = 0
