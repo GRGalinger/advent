@@ -2,7 +2,6 @@ import re
 from operator import itemgetter
 import numpy as np
 
-
 content = open('content/day5.txt', 'r')
 lines = content.readlines()
 
@@ -15,7 +14,21 @@ for line in lines:
 
 
 seedsArray = lineArray[0].strip().split(' ')[1:]
-# print(seedsArray)
+rangedSeedsArray = []
+
+itr = 0
+for seed in seedsArray:
+    if itr % 2 == 0:
+        seedStart = int(seedsArray[itr])
+        seedRange = int(seedsArray[itr + 1])
+        seedEnd = seedStart + seedRange
+        seedRange = list(set(range(seedStart, seedEnd)))
+        rangedSeedsArray += seedRange
+        
+    itr += 1
+
+
+rangedSeedsArray = list(set(rangedSeedsArray))
 
 seedToSoilStart = seedToSoilEnd = 0
 soilToFertilizerStart = soilToFertilizerEnd = 0
@@ -65,7 +78,6 @@ for line in lineArray:
 
     itr += 1
 
-
 for x in range(seedToSoilStart, seedToSoilEnd + 1):
     seedToSoilArray.append(lineArray[x].strip().split(' '))
 
@@ -88,84 +100,12 @@ for x in range(humidityToLocationStart, humidityToLocationEnd + 1):
     humidityToLocationArray.append(lineArray[x].strip().split(' '))
 
 
-seedToSoilConversion = []
-soilToFertilizerConversion = []
-fertilizerToWaterConversion = []
-waterToLightConversion = []
-lightToTemperatureConversion = []
-temperatureToHumidityConversion = []
-humidityToLocationConversion = []
 
-for line in seedToSoilArray:
-    destinationStart = int(line[0])
-    sourceStart = int(line[1])
-    rangeLength = int(line[2])
-    
-    itr = 0
-    while itr < rangeLength:
-        seedToSoilConversion.append([str(sourceStart + itr), str(destinationStart + itr)])
-        itr += 1
+# for line in fertilizerToWaterArray:
+#     print(line)
 
 
-for line in soilToFertilizerArray:
-    destinationStart = int(line[0])
-    sourceStart = int(line[1])
-    rangeLength = int(line[2])
-    
-    itr = 0
-    while itr < rangeLength:
-        soilToFertilizerConversion.append([str(sourceStart + itr), str(destinationStart + itr)])
-        itr += 1
-
-for line in fertilizerToWaterArray:
-    destinationStart = int(line[0])
-    sourceStart = int(line[1])
-    rangeLength = int(line[2])
-    
-    itr = 0
-    while itr < rangeLength:
-        fertilizerToWaterConversion.append([str(sourceStart + itr), str(destinationStart + itr)])
-        itr += 1
-
-for line in waterToLightArray:
-    destinationStart = int(line[0])
-    sourceStart = int(line[1])
-    rangeLength = int(line[2])
-    
-    itr = 0
-    while itr < rangeLength:
-        waterToLightConversion.append([str(sourceStart + itr), str(destinationStart + itr)])
-        itr += 1
-
-for line in lightToTemperatureArray:
-    destinationStart = int(line[0])
-    sourceStart = int(line[1])
-    rangeLength = int(line[2])
-    
-    itr = 0
-    while itr < rangeLength:
-        lightToTemperatureConversion.append([str(sourceStart + itr), str(destinationStart + itr)])
-        itr += 1
-
-for line in temperatureToHumidityArray:
-    destinationStart = int(line[0])
-    sourceStart = int(line[1])
-    rangeLength = int(line[2])
-    
-    itr = 0
-    while itr < rangeLength:
-        temperatureToHumidityConversion.append([str(sourceStart + itr), str(destinationStart + itr)])
-        itr += 1
-
-for line in humidityToLocationArray:
-    destinationStart = int(line[0])
-    sourceStart = int(line[1])
-    rangeLength = int(line[2])
-    
-    itr = 0
-    while itr < rangeLength:
-        humidityToLocationConversion.append([str(sourceStart + itr), str(destinationStart + itr)])
-        itr += 1
+# quit()
 
 
 soilsArray = []
@@ -176,105 +116,210 @@ temperaturesArray = []
 humiditiesArray = []
 locationsArray = []
 
-for seed in seedsArray:
+for seed in rangedSeedsArray:
     seedAccountedFor = False
 
-    # find line value in seedToSoilConversion
-    for conversionLine in seedToSoilConversion:
-        if conversionLine[0] == seed:
-            soilsArray.append(conversionLine[1])
+    for line in seedToSoilArray:
+        destinationStart = int(line[0])
+        sourceStart = int(line[1])
+        rangeLength = int(line[2])
+
+        if sourceStart == seed:
+            soilsArray.append(int(destinationStart))
             seedAccountedFor = True
-            continue
-    
-    if seedAccountedFor ==  False:
+            break
+
+        elif int(sourceStart + rangeLength) >= int(seed) and int(sourceStart) <= int(seed):
+            soilsArray.append(int(seed) + (abs(int(destinationStart) - int(sourceStart))))         
+            seedAccountedFor = True
+            break
+
+    if seedAccountedFor == False:
         soilsArray.append(seed)
-print(soilsArray)
+        
+
+
+# for soil in soilsArray:
+#     print('soil value: ' + str(soil))
+
+# quit()
 
 for soil in soilsArray:
     soilAccountedFor = False
 
-    # find line value in soilToFertilizerConversion
-    for conversionLine in soilToFertilizerConversion:
-        if conversionLine[0] == soil:
-            fertilizersArray.append(conversionLine[1])
+    for line in soilToFertilizerArray:
+        destinationStart = int(line[0])
+        sourceStart = int(line[1])
+        rangeLength = int(line[2])
+
+        if sourceStart == soil:
+            fertilizersArray.append(int(destinationStart))
             soilAccountedFor = True
-            continue
-    
-    if soilAccountedFor ==  False:
+            break
+
+        elif int(sourceStart + rangeLength) >= int(soil) and int(sourceStart) <= int(soil):
+            fertilizersArray.append(int(soil) + (int(destinationStart) - int(sourceStart)))       
+            soilAccountedFor = True
+            break
+
+    if soilAccountedFor == False:
         fertilizersArray.append(soil)
-print(fertilizersArray)
+
+
+# for line in fertilizersArray:
+#     print('fertilizer: ' + str(line))
+
+# quit()
 
 for fertilizer in fertilizersArray:
     fertilizerAccountedFor = False
 
-    # find line value in fertilizerToWaterConversion
-    for conversionLine in fertilizerToWaterConversion:
-        if conversionLine[0] == fertilizer:
-            watersArray.append(conversionLine[1])
+    # print('fertilizer: ' + str(fertilizer))
+
+    for line in fertilizerToWaterArray:
+        destinationStart = int(line[0])
+        sourceStart = int(line[1])
+        rangeLength = int(line[2])
+
+        if sourceStart == fertilizer:
+            watersArray.append(int(destinationStart))
             fertilizerAccountedFor = True
-            continue
-    
-    if fertilizerAccountedFor ==  False:
+            break
+
+        elif int(sourceStart + rangeLength) >= int(fertilizer) and int(sourceStart) <= int(fertilizer):
+            watersArray.append(int(fertilizer) + (int(destinationStart) - int(sourceStart)))         
+            fertilizerAccountedFor = True
+            break
+
+    if fertilizerAccountedFor == False:
         watersArray.append(fertilizer)
-print(watersArray)
+        continue
+
+
+
+
+
 
 for water in watersArray:
     waterAccountedFor = False
 
-    # find line value in waterToLightConversion
-    for conversionLine in waterToLightConversion:
-        if conversionLine[0] == water:
-            lightsArray.append(conversionLine[1])
+    for line in waterToLightArray:
+        destinationStart = int(line[0])
+        sourceStart = int(line[1])
+        rangeLength = int(line[2])
+
+        if sourceStart == water:
+            lightsArray.append(int(destinationStart))
             waterAccountedFor = True
-            continue
-    
-    if waterAccountedFor ==  False:
+            break
+
+        elif int(sourceStart + rangeLength) >= int(water) and int(sourceStart) <= int(water):
+            lightsArray.append(int(water) + (int(destinationStart) - int(sourceStart)))         
+            waterAccountedFor = True
+            break
+
+    if waterAccountedFor == False:
         lightsArray.append(water)
-print(lightsArray)
+        continue
+
+
+
+# for line in lightsArray:
+#     print(line)
+
 
 for light in lightsArray:
     lightAccountedFor = False
 
-    # find line value in waterToLightConversion
-    for conversionLine in lightToTemperatureConversion:
-        if conversionLine[0] == light:
-            temperaturesArray.append(conversionLine[1])
+    for line in lightToTemperatureArray:
+        destinationStart = int(line[0])
+        sourceStart = int(line[1])
+        rangeLength = int(line[2])
+
+        if sourceStart == light:
+            temperaturesArray.append(int(destinationStart))
             lightAccountedFor = True
-            continue
-    
-    if lightAccountedFor ==  False:
+            break
+
+        elif int(sourceStart + rangeLength) >= int(light) and int(sourceStart) <= int(light):
+            temperaturesArray.append(int(light) + (int(destinationStart) - int(sourceStart)))         
+            lightAccountedFor = True
+            break
+
+    if lightAccountedFor == False:
         temperaturesArray.append(light)
-print(temperaturesArray)
+        continue
+
+
+
+# for line in temperaturesArray:
+#     print(line)
+
 
 for temperature in temperaturesArray:
     temperatureAccountedFor = False
 
-    # find line value in waterToLightConversion
-    for conversionLine in temperatureToHumidityConversion:
-        if conversionLine[0] == temperature:
-            humiditiesArray.append(conversionLine[1])
+    for line in temperatureToHumidityArray:
+        destinationStart = int(line[0])
+        sourceStart = int(line[1])
+        rangeLength = int(line[2])
+
+        if sourceStart == temperature:
+            humiditiesArray.append(int(destinationStart))
             temperatureAccountedFor = True
-            continue
-    
-    if temperatureAccountedFor ==  False:
+            break
+
+        elif int(sourceStart + rangeLength) >= int(temperature) and int(sourceStart) <= int(temperature):
+            humiditiesArray.append(int(temperature) + (int(destinationStart) - int(sourceStart)))         
+            temperatureAccountedFor = True
+            break
+
+    if temperatureAccountedFor == False:
         humiditiesArray.append(temperature)
-print(humiditiesArray)
+        continue
+
+
+# for line in humiditiesArray:
+#     print(line)
+
+# quit()
 
 for humidity in humiditiesArray:
     humidityAccountedFor = False
 
-    # find line value in waterToLightConversion
-    for conversionLine in humidityToLocationConversion:
-        if conversionLine[0] == humidity:
-            locationsArray.append(conversionLine[1])
+    for line in humidityToLocationArray:
+        destinationStart = int(line[0])
+        sourceStart = int(line[1])
+        rangeLength = int(line[2])
+
+        if sourceStart == humidity:
+            locationsArray.append(int(destinationStart))
             humidityAccountedFor = True
-            continue
-    
-    if humidityAccountedFor ==  False:
+            break
+
+        elif int(sourceStart + rangeLength) >= int(humidity) and int(sourceStart) <= int(humidity):
+            locationsArray.append(int(humidity) + (int(destinationStart) - int(sourceStart)))         
+            humidityAccountedFor = True
+            break
+
+    if humidityAccountedFor == False:
         locationsArray.append(humidity)
+        continue
+
+
+
+print(rangedSeedsArray)
+print(soilsArray)
+print(fertilizersArray)
+print(watersArray)
+print(lightsArray)
+print(temperaturesArray)
+print(humiditiesArray)
 print(locationsArray)
 
+
 # quit()
+
 
 
 # DESTINATION - SOURCE -LENGTH
