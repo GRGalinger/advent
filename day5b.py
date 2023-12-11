@@ -5,7 +5,12 @@ seedsArray = []
 for line in lines:
     lineArray.append(line)
 
-seedsArray = lineArray[0].strip().split(' ')[1:]
+inputs = lineArray[0].strip().split(' ')[1:]
+seeds = []
+
+for i in range(0, len(inputs), 2):
+    seeds.append((int(inputs[i]), int(inputs[i]) + int(inputs[i + 1])))
+
 
 seedToSoilStart = seedToSoilEnd = 0
 soilToFertilizerStart = soilToFertilizerEnd = 0
@@ -83,104 +88,138 @@ lights = []
 temperatures = []
 humidities = []
 locations = []
-
-for seed in seedsArray:
-    seed = int(seed)
-
+ 
+while len(seeds) > 0:
+    s, e = seeds.pop()
     for a, b, c in seedToSoilArray:
         a = int(a)
         b = int(b)
         c = int(c)
-        
-        if b <= seed < b + c:
-            soils.append(seed - b + a)
+    
+        os = max(s, b)
+        oe = min(e, b + c)
+        if os < oe:
+            soils.append((os - b + a, oe - b + a))
+            if os > s:
+                seeds.append((s, os))
+            if e > oe:
+                seeds.append((oe, e))
             break
     else:
-        soils.append(seed)
-
-for soil in soils:
-    soil = int(soil)
-
+        soils.append((s, e))
+            
+while len(soils) > 0:
+    s, e = soils.pop()
     for a, b, c in soilToFertilizerArray:
         a = int(a)
         b = int(b)
         c = int(c)
-        
-        if b <= soil < b + c:
-            fertilizers.append(soil - b + a)
+    
+        os = max(s, b)
+        oe = min(e, b + c)
+        if os < oe:
+            fertilizers.append((os - b + a, oe - b + a))
+            if os > s:
+                soils.append((s, os))
+            if e > oe:
+                soils.append((oe, e))
             break
     else:
-        fertilizers.append(soil)
+        fertilizers.append((s, e))
 
-for fertilizer in fertilizers:
-    fertilizer = int(fertilizer)
-
+while len(fertilizers) > 0:
+    s, e = fertilizers.pop()
     for a, b, c in fertilizerToWaterArray:
         a = int(a)
         b = int(b)
         c = int(c)
-        
-        if b <= fertilizer < b + c:
-            waters.append(fertilizer - b + a)
+    
+        os = max(s, b)
+        oe = min(e, b + c)
+        if os < oe:
+            waters.append((os - b + a, oe - b + a))
+            if os > s:
+                fertilizers.append((s, os))
+            if e > oe:
+                fertilizers.append((oe, e))
             break
     else:
-        waters.append(fertilizer)
+        waters.append((s, e))
 
-for water in waters:
-    water = int(water)
-
+while len(waters) > 0:
+    s, e = waters.pop()
     for a, b, c in waterToLightArray:
         a = int(a)
         b = int(b)
         c = int(c)
-        
-        if b <= water < b + c:
-            lights.append(water - b + a)
+    
+        os = max(s, b)
+        oe = min(e, b + c)
+        if os < oe:
+            lights.append((os - b + a, oe - b + a))
+            if os > s:
+                waters.append((s, os))
+            if e > oe:
+                waters.append((oe, e))
             break
     else:
-        lights.append(water)
+        lights.append((s, e))
 
-for light in lights:
-    light = int(light)
-
+while len(lights) > 0:
+    s, e = lights.pop()
     for a, b, c in lightToTemperatureArray:
         a = int(a)
         b = int(b)
         c = int(c)
-        
-        if b <= light < b + c:
-            temperatures.append(light - b + a)
+    
+        os = max(s, b)
+        oe = min(e, b + c)
+        if os < oe:
+            temperatures.append((os - b + a, oe - b + a))
+            if os > s:
+                lights.append((s, os))
+            if e > oe:
+                lights.append((oe, e))
             break
     else:
-        temperatures.append(light)
+        temperatures.append((s, e))
 
-for temperature in temperatures:
-    temperature = int(temperature)
-
+while len(temperatures) > 0:
+    s, e = temperatures.pop()
     for a, b, c in temperatureToHumidityArray:
         a = int(a)
         b = int(b)
         c = int(c)
-        
-        if b <= temperature < b + c:
-            humidities.append(temperature - b + a)
+    
+        os = max(s, b)
+        oe = min(e, b + c)
+        if os < oe:
+            humidities.append((os - b + a, oe - b + a))
+            if os > s:
+                temperatures.append((s, os))
+            if e > oe:
+                temperatures.append((oe, e))
             break
     else:
-        humidities.append(temperature)
+        humidities.append((s, e))
 
-for humidity in humidities:
-    humidity = int(humidity)
-
+while len(humidities) > 0:
+    s, e = humidities.pop()
     for a, b, c in humidityToLocationArray:
         a = int(a)
         b = int(b)
         c = int(c)
-        
-        if b <= humidity < b + c:
-            locations.append(humidity - b + a)
+    
+        os = max(s, b)
+        oe = min(e, b + c)
+        if os < oe:
+            locations.append((os - b + a, oe - b + a))
+            if os > s:
+                humidities.append((s, os))
+            if e > oe:
+                humidities.append((oe, e))
             break
     else:
-        locations.append(humidity)
+        locations.append((s, e))
 
-print(min(locations))
-quit()
+print(min(locations)[0])
